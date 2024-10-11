@@ -14,9 +14,27 @@ export interface ICard {
 
 export interface IOrder {
     cards: string[];
-    total: number;
+    cost: number;
     payment: string;
     address: string;
     email: string;
-    phone: number;
+    phone: string;
+}
+
+export interface IBusket extends IOrderForm {
+    cards: string[];
+}
+
+export interface IOrderForm {
+    payment?: string;
+    address?: string;
+    phone?: string;
+    email?: string;
+    cost?: number;
+}
+
+export type FormErrors = Partial<Record<keyof IOrder, string>>;
+
+export interface IEvent {
+    onClick: (event: MouseEvent) => void;
 }
