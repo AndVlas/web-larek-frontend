@@ -13,15 +13,15 @@ export interface ICard {
 }
 
 export interface IOrder {
-    cards: string[];
-    cost: number;
+    items: string[];
+    total: number;
     payment: string;
     address: string;
     email: string;
     phone: string;
 }
 
-export interface IBusket extends IOrderForm {
+export interface IBasket extends IOrderForm {
     cards: string[];
 }
 
@@ -31,6 +31,11 @@ export interface IOrderForm {
     phone?: string;
     email?: string;
     cost?: number;
+}
+
+export interface IOrderResult {
+    id: string;
+    total: number;
 }
 
 export type FormErrors = Partial<Record<keyof IOrder, string>>;
