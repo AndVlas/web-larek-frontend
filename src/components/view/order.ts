@@ -4,10 +4,11 @@
 // - contactForm: HTMLFormElement — форма для адреса доставки
 // - paymentSelection:HTMLButtonElement — выбранный метод оплаты
 // - submitButton: HTMLButtonElement — кнопка подтверждения
+// - altButtons: HTMLButtonElement[] — кнопки выбора метода оплаты
 // - erorrsForm: HTMLElement — поле для вывода ошибок валидации
 
 // Методы:
-// - getPaymentSelection — отображает обводку кнопки метода оплаты
+// - setPaymentSelection — отображает обводку кнопки метода оплаты
 
 import { IEvents } from "../base/events";
 
@@ -21,11 +22,13 @@ export class Order implements IOrder {
     protected _orderForm: HTMLFormElement;
     protected _paymentSelection: string;
     protected _submitButton: HTMLButtonElement;
+    protected _altButtons: HTMLButtonElement[];
     errorsForm: HTMLElement;
 
     constructor(template: HTMLTemplateElement, protected events: IEvents) {
         this._orderForm = template.content.querySelector('.form').cloneNode(true) as HTMLFormElement;
         this._submitButton = this._orderForm.querySelector('.order__button') as HTMLButtonElement;
+        this._altButtons = Array.from(this._orderForm.querySelectorAll('.button_alt')) as HTMLButtonElement[];
         this.errorsForm = this._orderForm.querySelector('.form__errors') as HTMLElement;
 
         this._orderForm.addEventListener('input', (evt: Event) => {
@@ -55,7 +58,8 @@ export class Order implements IOrder {
     }
 
     setPaymentSelection(button: HTMLButtonElement) {
-        button.classList.toggle('button_alt-active');
+        this._altButtons.forEach(item => item.classList.remove('button_alt-active'));
+        button.classList.add('button_alt-active');
     }
 
     render() {

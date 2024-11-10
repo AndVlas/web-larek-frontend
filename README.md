@@ -130,6 +130,7 @@ Presenter - связывает модели данных и отображени
 - contactForm: HTMLFormElement — форма для адреса доставки
 - paymentSelection:HTMLButtonElement — выбранный метод оплаты
 - submitButton: HTMLButtonElement — кнопка подтверждения
+- altButtons: HTMLButtonElement[] — кнопки выбора метода оплаты
 - erorrsForm: HTMLElement — поле для вывода ошибок валидации
 
 Методы:

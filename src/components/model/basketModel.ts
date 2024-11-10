@@ -6,12 +6,11 @@
 // - addCard — добавляет карточку с товаром в корзину
 // - deleteCard — убирает карточку с товаром из корзины
 
-import { ICard } from '../../types/index';
 import { IEvents } from '../base/events';
 
 export interface IBasketModel {
-    productIds: string[]; // Массив идентификаторов продуктов
-    totalCost: number; // Стоимость корзины
+    productIds: string[];
+    totalCost: number;
 }
 
 export class BasketModel {
@@ -41,14 +40,14 @@ export class BasketModel {
 
     addCard(productId: string, productPrice: number) {
         this._productIds.push(productId);
-        this._totalCost += productPrice; // Увеличиваем стоимость корзины
+        this._totalCost += productPrice;
         this.events.emit('basket:change');
     }
 
     deleteCard(productId: string, productPrice: number) {
         const index = this._productIds.indexOf(productId);
         this._productIds.splice(index, 1);
-        this._totalCost -= productPrice; // Уменьшаем стоимость корзины
+        this._totalCost -= productPrice;
         this.events.emit('basket:change');
     }
 

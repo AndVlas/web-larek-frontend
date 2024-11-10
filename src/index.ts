@@ -68,20 +68,18 @@ events.on('card:select', (item: ICard) => {
     // Добавление карточки в корзину
 events.on('basket:add', () => {
     basketModel.addCard(cardModel.selectedCard.id, cardModel.selectedCard.price);
-    basket.setBusketAmount(basketModel.getCardAmount());
-    basket.setBusketCost(basketModel.getCardCost());
     modal.close();
 });
 
     // Удаление карточки из корзины
 events.on('basket:remove', (item: ICard) => {
     basketModel.deleteCard(item.id, item.price);
-    basket.setBusketAmount(basketModel.getCardAmount());
-    basket.setBusketCost(basketModel.getCardCost());
 });
 
     // Изменение корзины
 events.on('basket:change', () => {
+    basket.setBusketAmount(basketModel.getCardAmount());
+    basket.setBusketCost(basketModel.getCardCost());
     let index = 0;
     basket.cards = basketModel.productIds.map((item) => {
         const cardData = cardModel.cards.find(card => card.id === item);
@@ -93,7 +91,6 @@ events.on('basket:change', () => {
 
     // Открытие корзины
 events.on('basket:open', () => {
-    basket.setBusketCost(basketModel.getCardCost());
     modal.content = basket.render ();
     modal.render();
 });
@@ -109,7 +106,8 @@ events.on('card:open', (item: ICard) => {
 events.on('order:open', () => {
     modal.content = order.render();
     modal.render();
-    formModel.items = basketModel.productIds;
+    // formModel.items = basketModel.productIds;
+    // console.log(formModel.items);
 });
 
     // Обработка выбранного способа оплаты
@@ -132,7 +130,7 @@ events.on('order:error', (errors: Partial<IOrderForm>) => {
 
     // Открытие окна с данными клиента
 events.on('contact:open', () => {
-    formModel.total = basketModel.getCardCost();
+    // formModel.total = basketModel.getCardCost();
     modal.content = contact.render();
     modal.render();
 });
@@ -151,10 +149,15 @@ events.on('contact:error', (errors: Partial<IOrderForm>) => {
 
     // Открытие окна успешной покупки и формирование заказа
 events.on('order:send', () => {
-    apiModel.postOrder(formModel.getOrder())
+    const order = formModel.getOrder()
+    console.log(order);
+    order.items = basketModel.productIds;
+    order.total = basketModel.totalCost;
+    console.log(order);
+    apiModel.postOrder(order)
         .then((data) => {
             console.log(data);
-            modal.content = success.render(basketModel.getCardCost());
+            modal.content = success.render(order.total);
             basketModel.clearList();
             basket.setBusketAmount(basketModel.getCardAmount());
             basket.setBusketCost(basketModel.getCardCost());
