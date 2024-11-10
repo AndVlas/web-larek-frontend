@@ -15,6 +15,7 @@
 import { IEvents } from "../base/events";
 
 export interface IFormBasket {
+    // close(): void;
     setBusketAmount(amount: number): void
     setBusketCost(cost: number): void
     render(): HTMLElement;
@@ -27,6 +28,7 @@ export class Basket implements IFormBasket {
     protected _basketButton: HTMLButtonElement;
     protected _basketList: HTMLElement;
     protected _basketCost: HTMLElement;
+    private isOpen: boolean = false;
 
     constructor(template: HTMLTemplateElement, protected events: IEvents) {
         this._basketTemplate = template.content.querySelector('.basket').cloneNode(true) as HTMLElement;
@@ -36,9 +38,22 @@ export class Basket implements IFormBasket {
         this._basketList = this._basketTemplate.querySelector('.basket__list') as HTMLElement;
         this._basketCost = this._basketTemplate.querySelector('.basket__price') as HTMLElement;
 
+        // this._headerButton.addEventListener('click', () => {
+        //     if (!this.isOpen) { // Проверяем, открыта ли корзина
+        //         this.events.emit('basket:open');
+        //         this.isOpen = true; // Устанавливаем флаг в true
+        //     }
+        //     this.events.emit('basket:change');
+        // });
+
         this._headerButton.addEventListener('click', () => this.events.emit('basket:open'));
+        this._headerButton.addEventListener('click', () => this.events.emit('basket:change'));
         this._basketButton.addEventListener('click', () => this.events.emit('order:open'));
     }
+
+    // close() {
+    //     this.isOpen = false; // Устанавливаем флаг в false при закрытии корзины
+    // }
 
     set cards(cards: HTMLElement[]) {
         this._basketList.innerHTML = '';

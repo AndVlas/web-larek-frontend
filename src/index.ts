@@ -39,6 +39,7 @@ const modal = new Modal(modalTemplate, events);
 const basket = new Basket(basketTemplate, events);
 const order = new Order(orderTemplate, events);
 const contact = new Contact(contactTemplate, events);
+const success = new Success(successTemplate, events);
 
 
     // Получение товаров с сервера
@@ -66,34 +67,34 @@ events.on('card:select', (item: ICard) => {
 
     // Добавление карточки в корзину
 events.on('basket:add', () => {
-    basketModel.addCard(cardModel.selectedCard);
+    basketModel.addCard(cardModel.selectedCard.id, cardModel.selectedCard.price);
     basket.setBusketAmount(basketModel.getCardAmount());
+    basket.setBusketCost(basketModel.getCardCost());
     modal.close();
 });
 
     // Удаление карточки из корзины
 events.on('basket:remove', (item: ICard) => {
-    basketModel.deleteCard(item);
+    basketModel.deleteCard(item.id, item.price);
     basket.setBusketAmount(basketModel.getCardAmount());
     basket.setBusketCost(basketModel.getCardCost());
-    let index = 0;
-    basket.cards = basketModel.basketList.map((item) => {
-        const basketCard = new BasketCard(cardBasketTemplate, { onClick: () => events.emit('basket:remove', item) });
-        index = index + 1;
-        return basketCard.render(item, index);
-    })
 });
+
+    // Изменение корзины
+events.on('basket:change', () => {
+    let index = 0;
+    basket.cards = basketModel.productIds.map((item) => {
+        const cardData = cardModel.cards.find(card => card.id === item);
+        const basketCard = new BasketCard(cardBasketTemplate, events, { onClick: () => events.emit('basket:remove', cardData) });
+        index = index + 1;
+        return basketCard.render(cardData, index);
+    })
+})
 
     // Открытие корзины
 events.on('basket:open', () => {
     basket.setBusketCost(basketModel.getCardCost());
-    let index = 0
-    basket.cards = basketModel.basketList.map((item) => {
-        const basketCard = new BasketCard(cardBasketTemplate, { onClick: () => events.emit('basket:remove', item) });
-        index = index + 1;
-        return basketCard.render(item, index);
-    });
-    modal.content = basket.render();
+    modal.content = basket.render ();
     modal.render();
 });
 
@@ -108,8 +109,8 @@ events.on('card:open', (item: ICard) => {
 events.on('order:open', () => {
     modal.content = order.render();
     modal.render();
-    formModel.items = basketModel.basketList.map(item => item.id);
-})
+    formModel.items = basketModel.productIds;
+});
 
     // Обработка выбранного способа оплаты
 events.on('order:payment', (button: HTMLButtonElement) => { 
@@ -149,14 +150,14 @@ events.on('contact:error', (errors: Partial<IOrderForm>) => {
 })
 
     // Открытие окна успешной покупки и формирование заказа
-events.on('success:open', () => {
+events.on('order:send', () => {
     apiModel.postOrder(formModel.getOrder())
         .then((data) => {
             console.log(data);
-            const success = new Success(successTemplate, events);
             modal.content = success.render(basketModel.getCardCost());
-            basketModel.basketList = [];
+            basketModel.clearList();
             basket.setBusketAmount(basketModel.getCardAmount());
+            basket.setBusketCost(basketModel.getCardCost());
             modal.render();
         })
         .catch(error => console.log(error));

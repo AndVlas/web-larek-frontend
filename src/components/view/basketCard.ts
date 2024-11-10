@@ -1,4 +1,4 @@
-// Класс BasketItem, отвечает за отображение товара в корзине
+// Класс BasketCard, отвечает за отображение товара в корзине
 
 //  Атрибуты:
 // - basketCardTemplate: HTMLElement — шаблон товара корзины
@@ -12,6 +12,7 @@
 
 import { ICard } from "../../types";
 import { IEvent } from "../../types";
+import { IEvents } from "../base/events";
 
 export interface IBasketCard {
     render(data: ICard, index: number): HTMLElement;
@@ -24,7 +25,7 @@ export class BasketCard implements IBasketCard {
 	protected _price: HTMLElement;
     protected _deleteButton: HTMLButtonElement;
 
-    constructor(template: HTMLTemplateElement, actions?: IEvent) {
+    constructor(template: HTMLTemplateElement, protected events: IEvents, actions?: IEvent) {
         this._basketCard = template.content.querySelector('.basket__item').cloneNode(true) as HTMLElement;
         this._index = this._basketCard.querySelector('.basket__item-index');
 		this._title = this._basketCard.querySelector('.card__title');
@@ -33,11 +34,16 @@ export class BasketCard implements IBasketCard {
 
         if (actions?.onClick) {
 			this._deleteButton.addEventListener('click', actions.onClick);
+            // this.events.emit('basket:change');
 		}
     }
 
+    // change() {
+    //     this._deleteButton.addEventListener('click', this.events.emit('basket:change'));
+    // }
+
     protected setPrice(price: number | null) {
-        let result = (price === null) ? `Бесценно` : `${price} синапсов`
+        const result = (price === null) ? `Бесценно` : `${price} синапсов`
         return result;
     }
 

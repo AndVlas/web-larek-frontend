@@ -33,7 +33,7 @@ export class Contact implements IContact {
 
         this._contactForm.addEventListener('submit', (evt: Event) => {
             evt.preventDefault();
-            this.events.emit('success:open');
+            this.events.emit('order:send');
         });
     }
 

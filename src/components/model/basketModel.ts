@@ -10,42 +10,50 @@ import { ICard } from '../../types/index';
 import { IEvents } from '../base/events';
 
 export interface IBasketModel {
-    basketList: ICard[];
+    productIds: string[]; // Массив идентификаторов продуктов
+    totalCost: number; // Стоимость корзины
 }
 
 export class BasketModel {
-    protected _basketList: ICard[];
+    protected _productIds: string[];
+    protected _totalCost: number;
 
     constructor(protected events: IEvents) {
-        this._basketList = [];
+        this._productIds = [];
+        this._totalCost = 0;
     }
 
-    set basketList(data: ICard[]) {
-        this._basketList = data;
+    get productIds() {
+        return this._productIds;
     }
 
-    get basketList() {
-        return this._basketList;
+    get totalCost() {
+        return this._totalCost;
     }
 
     getCardCost() {
-        let cost = 0;
-        this.basketList.forEach(item => {
-            cost = cost + item.price;
-        });
-        return cost;
+        return this.totalCost;
     }
 
     getCardAmount() {
-        return this.basketList.length;
+        return this.productIds.length;
     }
 
-    addCard(data: ICard) {
-        this._basketList.push(data);
+    addCard(productId: string, productPrice: number) {
+        this._productIds.push(productId);
+        this._totalCost += productPrice; // Увеличиваем стоимость корзины
+        this.events.emit('basket:change');
     }
 
-    deleteCard(data: ICard) {
-        const index = this._basketList.indexOf(data);
-        this._basketList.splice(index, 1);
+    deleteCard(productId: string, productPrice: number) {
+        const index = this._productIds.indexOf(productId);
+        this._productIds.splice(index, 1);
+        this._totalCost -= productPrice; // Уменьшаем стоимость корзины
+        this.events.emit('basket:change');
+    }
+
+    clearList() {
+        this._productIds = [];
+        this._totalCost = 0;
     }
 }
